@@ -1,0 +1,51 @@
+================================================================================
+PUSH TRANSJECT TO GITHUB - SIMPLE STEPS
+================================================================================
+
+STEP 1: Create New Repository on GitHub
+----------------------------------------
+1. Go to: https://github.com/new
+2. Repository name: transject
+3. Description: TransJect: A novel knowledge transfer framework for neural networks
+4. Make it PUBLIC
+5. DO NOT check: Add README, Add .gitignore, Choose license
+6. Click "Create repository"
+
+
+STEP 2: Get Personal Access Token (if you don't have one)
+----------------------------------------------------------
+1. Go to: https://github.com/settings/tokens
+2. Click "Generate new token (classic)"
+3. Note: "TransJect"
+4. Check: "repo" (full control)
+5. Generate and COPY the token
+
+
+STEP 3: Run These Commands
+---------------------------
+cd /home/pratik/Downloads/uw/3/mpdistil_transject
+
+git add .
+git commit -m "Initial commit: TransJect framework"
+git branch -M main
+git remote add origin https://github.com/joshipratik232/transject.git
+git push -u origin main
+
+When prompted:
+- Username: joshipratik232
+- Password: [paste your token]
+
+
+STEP 4: Use in Google Colab
+----------------------------
+!git clone https://github.com/joshipratik232/transject.git
+%cd transject
+!pip install -r requirements.txt -q
+
+from transject import SequenceClassification, AutoModel
+
+
+Direct Colab Link:
+https://colab.research.google.com/github/joshipratik232/transject/blob/main/TransJect_Demo.ipynb
+
+================================================================================
