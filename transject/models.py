@@ -185,6 +185,7 @@ class SequenceClassification(BaseTransJectModel):
         teacher_model: str,
         num_labels: int = 2,
         config: Optional[TransJectConfig] = None,
+        token: Optional[str] = None,
         **kwargs
     ):
         """
@@ -195,6 +196,7 @@ class SequenceClassification(BaseTransJectModel):
             teacher_model: HuggingFace model identifier for teacher
             num_labels: Number of classification labels
             config: TransJect configuration
+            token: HuggingFace token for accessing gated models
             **kwargs: Additional configuration parameters
         """
         super().__init__(
@@ -208,14 +210,20 @@ class SequenceClassification(BaseTransJectModel):
         logger.info(f"Initializing SequenceClassification with student={student_model}, teacher={teacher_model}")
         
         # Load tokenizer
-        self.tokenizer = AutoTokenizer.from_pretrained(student_model)
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            student_model,
+            token=token,
+            trust_remote_code=True
+        )
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
         
         # Load models
         self.student_model = AutoModelForSequenceClassification.from_pretrained(
             student_model,
-            num_labels=num_labels
+            num_labels=num_labels,
+            token=token,
+            trust_remote_code=True
         )
         
         # Apply layer slicing if needed
@@ -227,7 +235,9 @@ class SequenceClassification(BaseTransJectModel):
         
         self.teacher_model = AutoModelForSequenceClassification.from_pretrained(
             teacher_model,
-            num_labels=num_labels
+            num_labels=num_labels,
+            token=token,
+            trust_remote_code=True
         )
         
         # Freeze teacher model
@@ -321,6 +331,7 @@ class AutoModel(BaseTransJectModel):
         student_model: str,
         teacher_model: str,
         config: Optional[TransJectConfig] = None,
+        token: Optional[str] = None,
         **kwargs
     ):
         """
@@ -330,6 +341,7 @@ class AutoModel(BaseTransJectModel):
             student_model: HuggingFace model identifier for student
             teacher_model: HuggingFace model identifier for teacher
             config: TransJect configuration
+            token: HuggingFace token for accessing gated models
             **kwargs: Additional configuration parameters
         """
         super().__init__(
@@ -342,12 +354,20 @@ class AutoModel(BaseTransJectModel):
         logger.info(f"Initializing AutoModel with student={student_model}, teacher={teacher_model}")
         
         # Load tokenizer
-        self.tokenizer = AutoTokenizer.from_pretrained(student_model)
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            student_model,
+            token=token,
+            trust_remote_code=True
+        )
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
         
         # Load models
-        self.student_model = AutoModelForCausalLM.from_pretrained(student_model)
+        self.student_model = AutoModelForCausalLM.from_pretrained(
+            student_model,
+            token=token,
+            trust_remote_code=True
+        )
         
         # Apply layer slicing if needed
         if self.config.student_layers != -1:
@@ -356,7 +376,11 @@ class AutoModel(BaseTransJectModel):
                 self.config.student_layers
             )
         
-        self.teacher_model = AutoModelForCausalLM.from_pretrained(teacher_model)
+        self.teacher_model = AutoModelForCausalLM.from_pretrained(
+            teacher_model,
+            token=token,
+            trust_remote_code=True
+        )
         
         # Freeze teacher model
         for param in self.teacher_model.parameters():
